@@ -1,0 +1,26 @@
+name: Build Pool Menu
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compile dylib
+        run: |
+          clang++ -shared -o PoolMenu.dylib PoolMenu.mm \
+            -framework UIKit -framework Foundation \
+            -arch arm64 -miphoneos-version-min=15.0 \
+            -isysroot $(xcrun --sdk iphoneos --show-sdk-path) || true
+          ls -la
+
+      - name: Upload dylib
+        uses: actions/upload-artifact@v4
+        with:
+          name: PoolMenu-dylib
+          path: PoolMenu.dylib
